@@ -103,7 +103,9 @@ graph TD
 
 ---
 
-## 2. Risk Table
+---Perfect 👌 — here is your **Markdown version updated to include the `Owner` field**, aligned exactly with your LaTeX version.
+
+---
 
 ### Threat Vectors
 
@@ -118,59 +120,58 @@ graph TD
 
 ### Infra Vectors
 
-| ID | Risk                            | Severity | Impact                               |
-| -- | ------------------------------- | -------- | ------------------------------------ |
-| 1  | Secrets in env/container image  | Critical | Hardcoded AWS keys or DB credentials |
-| 2  | No Backup Strategy              | Critical | Data loss                            |
-| 3  | Misconfigured S3 bucket         | High     | Public exposure of attachments       |
-| 4  | Insecure IAM roles              | High     | Excess privileges allow DB/S3 access |
-| 5  | Inadequate logging & monitoring | Medium   | Delayed breach detection             |
-| 6  | Weak encryption for JWT         | Medium   | Token forgery or data compromise     |
-| 7  | No disaster recovery            | Medium   | Long downtime                        |
+| ID | Risk                            | Severity | Impact                               | Owner          |
+| -- | ------------------------------- | -------- | ------------------------------------ | -------------- |
+| 1  | Secrets in env/container image  | Critical | Hardcoded AWS keys or DB credentials | DevOps Team    |
+| 2  | No Backup Strategy              | Critical | Data loss                            | DevOps Team    |
+| 3  | Misconfigured S3 bucket         | High     | Public exposure of attachments       | Cloud Engineer |
+| 4  | Insecure IAM roles              | High     | Excess privileges allow DB/S3 access | Cloud Security |
+| 5  | Inadequate logging & monitoring | Medium   | Delayed breach detection             | SOC Team       |
+| 6  | Weak encryption for JWT         | Medium   | Token forgery or data compromise     | Backend Team   |
+| 7  | No disaster recovery            | Medium   | Long downtime                        | DevOps Lead    |
 
 ---
 
 ### Web Vectors
 
-| ID | Risk                        | Severity | Impact                                    |
-| -- | --------------------------- | -------- | ----------------------------------------- |
-| 1  | XSS via web form            | Critical | Scripts run in dashboard                  |
-| 2  | SQL Injection in API        | Critical | Data exfiltration / privilege escalation  |
-| 3  | IDOR in multi-tenant system | Critical | Competitors access customer tickets       |
-| 4  | Insecure cookies            | High     | JS can access sensitive cookies           |
-| 5  | CSRF on ticket submission   | Medium   | Unauthorized ticket creation/modification |
-| 6  | Insufficient rate limiting  | Medium   | LLM abuse / DoS dashboard                 |
-| 7  | WebSockets abuse            | Medium   | Flooding updates, potential DoS           |
-| 8  | Credential disclosure       | Medium   | Return plaintext passwords                |
-| 9  | Lack of input validation    | Medium   | Injection or malformed data               |
-| 10 | JWT replay attack           | Medium   | Reuse of tokens to access dashboard       |
+| ID | Risk                        | Severity | Impact                                    | Owner                   |
+| -- | --------------------------- | -------- | ----------------------------------------- | ----------------------- |
+| 1  | XSS via web form            | Critical | Scripts run in dashboard                  | Frontend + Backend Team |
+| 2  | SQL Injection in API        | Critical | Data exfiltration / privilege escalation  | Backend Team            |
+| 3  | IDOR in multi-tenant system | Critical | Competitors access customer tickets       | Backend Team            |
+| 4  | Insecure cookies            | High     | JS can access sensitive cookies           | Backend Team            |
+| 5  | CSRF on ticket submission   | Medium   | Unauthorized ticket creation/modification | Backend Team           |
+| 6  | Insufficient rate limiting  | Medium   | LLM abuse / DoS dashboard                 | DevOps  Team           |
+| 7  | WebSockets abuse            | Medium   | Flooding updates, potential DoS           | Backend Team            |
+| 8  | Credential disclosure       | Medium   | Return plaintext passwords                | Backend Team            |
+| 9  | Lack of input validation    | Medium   | Injection or malformed data               | Backend Team            |
+| 10 | JWT replay attack           | Medium   | Reuse of tokens to access dashboard       | Backend Team            |
 
 ---
 
 ### User Vectors
 
-| ID | Risk                            | Severity | Impact                          |
-| -- | ------------------------------- | -------- | ------------------------------- |
-| 1  | No MFA for admin                | High     | Credential theft                |
-| 2  | Weak password policies          | Medium   | Brute-force attacks             |
-| 3  | Unsanitized email notifications | Medium   | Phishing / content injection    |
-| 4  | No user activity logging        | Medium   | Insider misuse cannot be traced |
-| 5  | No lockout policy               | Medium   | Unlimited login attempts        |
+| ID | Risk                            | Severity | Impact                          | Owner         |
+| -- | ------------------------------- | -------- | ------------------------------- | ------------- |
+| 1  | No MFA for admin                | High     | Credential theft                | IAM Team      |
+| 2  | Weak password policies          | Medium   | Brute-force attacks             | Security Team |
+| 3  | Unsanitized email notifications | Medium   | Phishing / content injection    | SOC Team      |
+| 4  | No user activity logging        | Medium   | Insider misuse cannot be traced | SOC Team      |
+| 5  | No lockout policy               | Medium   | Unlimited login attempts        | Backend Team  |
 
 ---
 
 ### LLM Vectors
 
-| ID | Risk                         | Severity | Impact                                           |
-| -- | ---------------------------- | -------- | ------------------------------------------------ |
-| 1  | Prompt injection             | High     | Exfiltrate sensitive data / manipulate summaries |
-| 2  | Compromised LLM SDK          | High     | Inject malicious code or steal data              |
-| 3  | Insecure output handling     | High     | Malicious JS in LLM output → XSS                 |
-| 4  | LLM data leakage via logging | Medium   | Ticket contents may leak                         |
-| 5  | No LLM rate limiting         | Medium   | Cost explosion / DoS                             |
+| ID | Risk                         | Severity | Impact                                           | Owner                   |
+| -- | ---------------------------- | -------- | ------------------------------------------------ | ----------------------- |
+| 1  | Prompt injection             | High     | Exfiltrate sensitive data / manipulate summaries | AI Team                 |
+| 2  | Compromised LLM SDK          | High     | Inject malicious code or steal data              | DevOps Team             |
+| 3  | Insecure output handling     | High     | Malicious JS in LLM output → XSS                 | Backend + Frontend Team |
+| 4  | LLM data leakage via logging | Medium   | Ticket contents may leak                         | DevOps Team             |
+| 5  | No LLM rate limiting         | Medium   | Cost explosion / DoS                             | DevOps Team             |
 
 ---
-
 ## 3. Mitigation Plan
 
 ### Web Vectors
