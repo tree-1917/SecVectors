@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Support Dashboard</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #4a90e2;
+        }
+
+        .sentiment {
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .Frustrated {
+            color: #e74c3c;
+        }
+
+        .Neutral {
+            color: #95a5a6;
+        }
+
+        .Curious {
+            color: #3498db;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        #stats {
+            font-size: 1.2em;
+            color: #2c3e50;
+            background: #ecf0f1;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+
+        .admin-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .admin-btn {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .namespace-tag {
+            background: #34495e;
+            color: #ecf0f1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div>
+            <h1><span id="analyst-name">Analyst</span> Dashboard</h1>
+            <p>Namespace: <span id="namespace-name" class="namespace-tag">Loading...</span></p>
+        </div>
+        <div class="admin-controls">
+            <div id="stats">Global Tickets: <span id="count">0</span></div>
+            <a href="/login.html" id="admin-login-link" class="admin-btn">Become Admin</a>
+        </div>
+    </header>
+
+    <div id="tickets"></div>
+
+    <script>
+        const socket = io();
+        socket.on('globalTicketCount', (count) => {
+            document.getElementById('count').innerText = count;
+        });
+
+        // Simulating an Analyst Token for XSS theft demo
+        localStorage.setItem('analyst_token', 'ANALYST_SECRET_OWASP_SESSION_12345');
+
+        async function fetchTickets() {
+            const res = await fetch('/api/tickets');
+            if (res.status === 401) {
+                window.location.href = '/analyst_login.html';
+                return;
+            }
+            const data = await res.json();
+            const { tickets, analyst } = data;
+
+            document.getElementById('analyst-name').innerText = analyst.username;
+            document.getElementById('namespace-name').innerText = analyst.namespace;
+
+            const container = document.getElementById('tickets');
+            container.innerHTML = '';
+
+            if (tickets.length === 0) {
+                container.innerHTML = '<p>No tickets found for this namespace.</p>';
+                return;
+            }
+
+            tickets.forEach(t => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                // VULNERABLE: Using innerHTML for 'issue' field (XSS)
+                div.innerHTML = `
+                    <h3>${t.subject}</h3>
+                    <p><strong>Issue:</strong> ${t.issue}</p>
+                    <p class="sentiment ${t.customer_sentiment}">Sentiment: ${t.customer_sentiment}</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+        fetchTickets();
+    </script>
+</body>
+
+</html>

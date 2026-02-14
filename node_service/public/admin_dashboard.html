@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #1c1e21;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            font-size: 1.1em;
+            color: #7f8c8d;
+        }
+
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #2c3e50;
+        }
+
+        .payment-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #e67e22;
+        }
+
+        .payment-section h2 {
+            margin-top: 0;
+            color: #c0392b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #d35400;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Admin Control Panel</h1>
+            <div class="nav-links">
+                <a href="/">Dashboard</a>
+                <a href="/analyst_login.html">Logout</a>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Analysts</h3>
+                <div id="analysts-count" class="value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Open Tickets</h3>
+                <div id="open-tickets" class="value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Closed Tickets</h3>
+                <div id="closed-tickets" class="value">0</div>
+            </div>
+        </div>
+
+        <div class="payment-section">
+            <h2>Payment Method (Admin Credit)</h2>
+            <p>Maintain the system-wide admin billing information here.</p>
+            <div class="form-group">
+                <label for="credit_card">Card Number (Stored for Billing)</label>
+                <input type="text" id="credit_card" placeholder="XXXX-XXXX-XXXX-XXXX">
+            </div>
+            <button onclick="updateCredit()">Update Billing Information</button>
+            <p id="status-msg" style="margin-top: 15px;"></p>
+        </div>
+    </div>
+
+    <script>
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/admin/stats');
+                if (res.status === 401) {
+                    window.location.href = '/analyst_login.html';
+                    return;
+                }
+                const data = await res.json();
+                document.getElementById('analysts-count').innerText = data.analysts;
+                document.getElementById('open-tickets').innerText = data.openTickets;
+                document.getElementById('closed-tickets').innerText = data.closedTickets;
+            } catch (err) {
+                console.error("Error loading stats:", err);
+            }
+        }
+
+        async function loadCredit() {
+            try {
+                const res = await fetch('/api/admin/credit');
+                const data = await res.json();
+                document.getElementById('credit_card').value = data.credit_card || '';
+            } catch (err) {
+                console.error("Error loading credit:", err);
+            }
+        }
+
+        async function updateCredit() {
+            const credit_card = document.getElementById('credit_card').value;
+            const msg = document.getElementById('status-msg');
+            try {
+                const res = await fetch('/api/admin/credit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credit_card })
+                });
+                if (res.ok) {
+                    msg.innerText = "Billing information updated successfully.";
+                    msg.style.color = "green";
+                } else {
+                    msg.innerText = "Error updating billing information.";
+                    msg.style.color = "red";
+                }
+            } catch (err) {
+                msg.innerText = "Network error.";
+                msg.style.color = "red";
+            }
+        }
+
+        loadStats();
+        loadCredit();
+    </script>
+</body>
+
+</html>

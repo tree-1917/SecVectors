@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  flask_service:
+    build: ./flask_service
+    ports:
+      - "5000:5000"
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+
+  golang_service:
+    build: ./golang_service
+    environment:
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - redis
+      - postgres
+
+  node_service:
+    build: ./node_service
+    ports:
+      - "3000:3000"
+    environment:
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - postgres
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=support_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_init/init.sql:/docker-entrypoint-initdb.d/init.sql
