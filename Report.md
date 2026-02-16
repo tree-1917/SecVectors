@@ -103,7 +103,6 @@ graph TD
 
 ---
 
----Perfect 👌 — here is your **Markdown version updated to include the `Owner` field**, aligned exactly with your LaTeX version.
 
 ---
 
